@@ -2,6 +2,8 @@
 #include "my-gists/codepage.hpp"
 #include <cstdlib>
 #include <cstdio>
+#include <fcntl.h>
+#include <io.h>
 using namespace CODEPAGE_n;
 
 Cshiori shiori;
@@ -40,16 +42,16 @@ void loghandler(const wchar_t *str, int mode){
 			fwprintf(stdout,str);
 			break;
 		case E_F:/* fatal */
-			fprintf(stderr,"::error title=fatal::fatal:%ls",str);
+			fwprintf(stderr,L"::error title=fatal::%ls",str);
 			break;
 		case E_E:/* error */
-			fprintf(stderr,"::error title=error::error:%ls",str);
+			fwprintf(stderr,L"::error title=error::%ls",str);
 			break;
 		case E_W:/* warning */
-			fprintf(stderr,"::warning title=warning::warning:%ls",str);
+			fwprintf(stderr,L"::warning title=warning::%ls",str);
 			break;
 		case E_N:/* note */
-			fprintf(stderr,"::notice title=notice::notice:%ls",str);
+			fwprintf(stderr,L"::notice title=notice::%ls",str);
 			break;
 		case E_J:/* other(j) */
 			fwprintf(stdout,str);
@@ -57,18 +59,22 @@ void loghandler(const wchar_t *str, int mode){
 	};
 }
 int wmain(int argc,wchar_t**argv){
+	void(_setmode(_fileno(stderr), _O_U16TEXT));
+	void(_setmode(_fileno(stdout), _O_U16TEXT));
+	void(_setmode(_fileno(stdin), _O_U16TEXT));
 	//::error file={name},line={line},endLine={endLine},title={title}::{message}
 	//::warning file={name},line={line},endLine={endLine},title={title}::{message}
 	//::notice file={name},line={line},endLine={endLine},title={title}::{message}
 	//
+	shiori.Set_loghandler(loghandler);
 	shiori.SetTo(argv[1]);
 	if(!shiori.All_OK())
-		fprintf(stderr,"::error title=shiori.ALL_OK() returns false::shiori load failed");
+		fwprintf(stderr,L"::error title=shiori.ALL_OK() returns false::shiori load failed");
 	if(!shiori.can_make_CI_check())
-		fprintf(stderr,"::error title=checker is NULL::Unsupported shiori");
+		fwprintf(stderr,L"::error title=checker is NULL::Unsupported shiori");
 	auto failed=shiori.CI_check_failed();
 	if (failed){
-		fprintf(stderr,"::error title=open your tama!::some error in your dic");
+		fwprintf(stderr,L"::error title=open your tama!::some error in your dic");
 	}
 	return failed?EXIT_FAILURE:EXIT_SUCCESS;
 };
