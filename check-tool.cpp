@@ -17,7 +17,8 @@ Cshiori shiori;
 #define	E_SJIS		16	/* マルチバイト文字コード＝SJIS */
 #define	E_UTF8		17	/* マルチバイト文字コード＝UTF-8 */
 #define	E_DEFAULT	32	/* マルチバイト文字コード＝OSデフォルトのコード */
-void loghandler(const wchar_t *str, int mode, int id){
+void loghandler(const wchar_t *stra, int mode, int id){
+	std::wstring_view str=stra;
 	//TODO: Get filename & linenum from str like Taromati2
 	/*
 	//E:\ssp\ghost\Taromati2\ghost\master\dic\system\ERRORLOG.dic(17) : error E0041 : 'for'のループ式が異常です.
@@ -54,7 +55,7 @@ void loghandler(const wchar_t *str, int mode, int id){
 	::warning file={name},line={line},endLine={endLine},title={title}::{message}
 	::notice file={name},line={line},endLine={endLine},title={title}::{message}
 	*/
-	static bool in_dic_load=0;
+	static bool in_dic_load=0,in_request_end=0;
 	switch(mode){
 		case E_SJIS:
 		case E_UTF8:
@@ -62,30 +63,43 @@ void loghandler(const wchar_t *str, int mode, int id){
 		case E_END:
 			break;
 		case E_I:/* info */
-			if (in_dic_load && id == 8) {//dic load end
-					in_dic_load = 0;
-					fwprintf(stdout, L"::endgroup::\n");
+			if(L"// request\n"==str){
+				fwprintf(stdout, L"::group::request call\n");
 			}
-			fwprintf(stdout,str);
+			else if (L"// response (Execution time : " == str.substr(0, 30)) {
+				in_request_end = 1;
+			}
+			else if (in_request_end && str == L"\n") {
+				in_request_end = 0;
+				fwprintf(stdout, L"::endgroup::\n");
+			}
+			if (id != 0) {
+				fwprintf(stdout, L"");
+			}
+			if (in_dic_load && id == 8) {//dic load end
+				in_dic_load = 0;
+				fwprintf(stdout, L"::endgroup::\n");
+			}
+			fwprintf(stdout,str.data());
 			if (id == 3) {//dic load begin
-					in_dic_load = 1;
-					fwprintf(stdout, L"::group::dic load list\n");
+				in_dic_load = 1;
+				fwprintf(stdout, L"::group::dic load list\n");
 			}
 			break;
 		case E_F:/* fatal */
-			fwprintf(stderr,L"::error title=fatal::%ls",str);
+			fwprintf(stderr,L"::error title=fatal::%ls",str.data());
 			break;
 		case E_E:/* error */
-			fwprintf(stderr,L"::error title=error::%ls",str);
+			fwprintf(stderr,L"::error title=error::%ls",str.data());
 			break;
 		case E_W:/* warning */
-			fwprintf(stderr,L"::warning title=warning::%ls",str);
+			fwprintf(stderr,L"::warning title=warning::%ls",str.data());
 			break;
 		case E_N:/* note */
-			fwprintf(stderr,L"::notice title=notice::%ls",str);
+			fwprintf(stderr,L"::notice title=notice::%ls",str.data());
 			break;
 		case E_J:/* other(j) */
-			fwprintf(stdout,str);
+			fwprintf(stdout,str.data());
 			break;
 	};
 }
