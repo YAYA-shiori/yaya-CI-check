@@ -54,6 +54,13 @@ void loghandler(const wchar_t *str, int mode){
 	::warning file={name},line={line},endLine={endLine},title={title}::{message}
 	::notice file={name},line={line},endLine={endLine},title={title}::{message}
 	*/
+	//TODO: read messagetxt and match msgj[3] (dic load begin) & msgj[8] (dic load end)
+	//then out put info in CI from
+	/*
+	::group::{title}
+	Inside group
+	::endgroup::
+	*/
 	switch(mode){
 		case E_SJIS:
 		case E_UTF8:
