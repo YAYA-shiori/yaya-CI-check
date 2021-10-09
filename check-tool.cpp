@@ -90,13 +90,23 @@ void loghandler(const wchar_t *stra, int mode, int id){
 			fwprintf(stderr,L"::error title=fatal::%ls",str.data());
 			break;
 		case E_E:/* error */
-			fwprintf(stderr,L"::error title=error::%ls",str.data());
+			if(id!=57)
+				fwprintf(stderr,L"::error title=error::%ls",str.data());
+			else{
+				fwprintf(stdout,str.data());
+				fwprintf(stdout,L"// from CI checker: E0057 is always ignored in CI check");
+			}
 			break;
 		case E_W:/* warning */
 			fwprintf(stderr,L"::warning title=warning::%ls",str.data());
 			break;
 		case E_N:/* note */
-			fwprintf(stderr,L"::notice title=notice::%ls",str.data());
+			if(id!=0)
+				fwprintf(stderr,L"::notice title=notice::%ls",str.data());
+			else{
+				fwprintf(stdout,str.data());
+				fwprintf(stdout,L"// from CI checker: N0000 is always ignored in CI check");
+			}
 			break;
 		case E_J:/* other(j) */
 			fwprintf(stdout,str.data());
