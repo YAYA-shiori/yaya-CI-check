@@ -66,7 +66,7 @@ void loghandler(const wchar_t *stra, int mode, int id){
 			if(L"// request\n"==str){
 				fwprintf(stdout, L"::group::request call\n");
 			}
-			else if (L"// response (Execution time : " == str.substr(0, 30)) {
+			else if (!in_request_end && L"// response (Execution time : " == str.substr(0, 30)) {
 				in_request_end = 1;
 			}
 			else if (in_request_end && str == L"\n") {
