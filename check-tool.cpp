@@ -1,5 +1,4 @@
 #include "my-gists/ukagaka/shiori_loader.hpp"
-#include "my-gists/codepage.hpp"
 #include <cstdlib>
 #include <cstdio>
 #include <fcntl.h>
@@ -19,6 +18,42 @@ Cshiori shiori;
 #define	E_UTF8		17	/* マルチバイト文字コード＝UTF-8 */
 #define	E_DEFAULT	32	/* マルチバイト文字コード＝OSデフォルトのコード */
 void loghandler(const wchar_t *str, int mode){
+	//TODO: Get filename & linenum from str like Taromati2
+	/*
+	//E:\ssp\ghost\Taromati2\ghost\master\dic\system\ERRORLOG.dic(17) : error E0041 : 'for'のループ式が異常です.
+	ErrorList.SPLIT{
+		_L=SPLIT(RE_REPLACEEX(_argv[0],'\((\d+|-)\) : ',',$1,'),',',3)
+		//("E:\ssp\ghost\Taromati2\ghost\master\dic\system\ERRORLOG.dic","17","error E0041 : 'for'のループ式が異常です.")
+		_L[2]=SPLIT(RE_REPLACEEX(_L[2],' *([WEN])(\d+|-)( *: |：)',',$1,$2,'),',',4)
+		//("E:\ssp\ghost\Taromati2\ghost\master\dic\system\ERRORLOG.dic","17","error","E","0041","'for'のループ式が異常です.")
+		_L
+	}
+	ErrorList.Gene{
+		ErrorList.filename=IARRAY
+		ErrorList.linenum=IARRAY
+		ErrorList.type=IARRAY
+		ErrorList.typecode=IARRAY
+		ErrorList.code=IARRAY
+		ErrorList.Info=IARRAY
+
+		_l=GETERRORLOG
+		foreach _l;_i{
+			_t=ErrorList.SPLIT(_i)
+			ErrorList.filename,=_t[0]
+			ErrorList.linenum,=TOINT(_t[1])
+			ErrorList.type,=_t[2]
+			ErrorList.typecode,=_t[3]
+			ErrorList.code,=TOINT(_t[4])
+			ErrorList.Info,=_t[5]
+		}
+	}
+	*/
+	//then out put info in CI from
+	/*
+	::error file={name},line={line},endLine={endLine},title={title}::{message}
+	::warning file={name},line={line},endLine={endLine},title={title}::{message}
+	::notice file={name},line={line},endLine={endLine},title={title}::{message}
+	*/
 	switch(mode){
 		case E_SJIS:
 		case E_UTF8:
