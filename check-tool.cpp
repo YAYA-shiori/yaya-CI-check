@@ -17,7 +17,7 @@ Cshiori shiori;
 #define	E_SJIS		16	/* マルチバイト文字コード＝SJIS */
 #define	E_UTF8		17	/* マルチバイト文字コード＝UTF-8 */
 #define	E_DEFAULT	32	/* マルチバイト文字コード＝OSデフォルトのコード */
-void loghandler(const wchar_t *str, int mode){
+void loghandler(const wchar_t *str, int mode, int id){
 	//TODO: Get filename & linenum from str like Taromati2
 	/*
 	//E:\ssp\ghost\Taromati2\ghost\master\dic\system\ERRORLOG.dic(17) : error E0041 : 'for'のループ式が異常です.
@@ -54,13 +54,7 @@ void loghandler(const wchar_t *str, int mode){
 	::warning file={name},line={line},endLine={endLine},title={title}::{message}
 	::notice file={name},line={line},endLine={endLine},title={title}::{message}
 	*/
-	//TODO: read messagetxt and match msgj[3] (dic load begin) & msgj[8] (dic load end)
-	//then out put info in CI from
-	/*
-	::group::{title}
-	Inside group
-	::endgroup::
-	*/
+	static bool in_dic_load=0;
 	switch(mode){
 		case E_SJIS:
 		case E_UTF8:
@@ -84,6 +78,14 @@ void loghandler(const wchar_t *str, int mode){
 			break;
 		case E_J:/* other(j) */
 			fwprintf(stdout,str);
+			if(id==3){//dic load begin
+				in_dic_load = 1;
+				fwprintf(stdout, L"::group::dic load list\n");
+			}
+			else if (in_dic_load && id == 8) {//dic load end
+				in_dic_load = 0;
+				fwprintf(stdout, L"::endgroup::\n");
+			}
 			break;
 	};
 }
