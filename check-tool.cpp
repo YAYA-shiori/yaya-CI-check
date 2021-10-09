@@ -46,9 +46,9 @@ void loghandler(const wchar_t *str, int mode){
 	};
 }
 int wmain(int argc,wchar_t**argv){
-	void(_setmode(_fileno(stderr), _O_U16TEXT));
-	void(_setmode(_fileno(stdout), _O_U16TEXT));
-	void(_setmode(_fileno(stdin), _O_U16TEXT));
+	void(_setmode(_fileno(stderr), _O_U8TEXT));
+	void(_setmode(_fileno(stdout), _O_U8TEXT));
+	void(_setmode(_fileno(stdin), _O_U8TEXT));
 	//::error file={name},line={line},endLine={endLine},title={title}::{message}
 	//::warning file={name},line={line},endLine={endLine},title={title}::{message}
 	//::notice file={name},line={line},endLine={endLine},title={title}::{message}
