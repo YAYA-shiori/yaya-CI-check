@@ -56,14 +56,14 @@ int wmain(int argc,wchar_t**argv){
 	shiori.Set_loghandler(loghandler);
 	shiori.SetTo(argv[1]);
 	if(!shiori.All_OK())
-		fwprintf(stderr,L"::error title=shiori.ALL_OK() returns false::shiori load failed");
+		fwprintf(stderr,L"::error title=shiori.ALL_OK() returns false::shiori load failed\n");
 	if(!shiori.can_make_CI_check()){
-		fwprintf(stderr,L"::error title=checker is NULL::Unsupported shiori");
+		fwprintf(stderr,L"::error title=checker is NULL::Unsupported shiori\n");
 		return EXIT_FAILURE;
 	}
 	auto failed=shiori.CI_check_failed();
 	if (failed){
-		fwprintf(stderr,L"::error title=open your tama!::some error in your dic");
+		fwprintf(stderr,L"::error title=open your tama!::some error in your dic\n");
 	}
 	return failed?EXIT_FAILURE:EXIT_SUCCESS;
 };
