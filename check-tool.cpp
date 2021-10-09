@@ -15,9 +15,8 @@ Cshiori shiori;
 #define	E_SJIS		16	/* マルチバイト文字コード＝SJIS */
 #define	E_UTF8		17	/* マルチバイト文字コード＝UTF-8 */
 #define	E_DEFAULT	32	/* マルチバイト文字コード＝OSデフォルトのコード */
-CODEPAGE the_using=CP_UTF8;
 std::wstring do_charset_convert(std::wstring_view a) {
-	return the_using==CP_UTF8?(std::wstring)a:MultiByteToUnicode(UnicodeToMultiByte(a.data(),the_using),CP_UTF8);
+	return MultiByteToUnicode(UnicodeToMultiByte(a.data(),CP_ACP),CP_UTF8);
 }
 
 void loghandler(const wchar_t *str, int mode){
@@ -25,14 +24,8 @@ void loghandler(const wchar_t *str, int mode){
 	str=tmp.c_str();
 	switch(mode){
 		case E_SJIS:
-			the_using=CP_SJIS;
-			break;
 		case E_UTF8:
-			the_using=CP_UTF8;
-			break;
 		case E_DEFAULT:
-			the_using=CP_ACP;
-			break;
 		case E_END:
 			break;
 		case E_I:/* info */
