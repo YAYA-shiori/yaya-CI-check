@@ -62,7 +62,15 @@ void loghandler(const wchar_t *str, int mode, int id){
 		case E_END:
 			break;
 		case E_I:/* info */
+			if (in_dic_load && id == 8) {//dic load end
+					in_dic_load = 0;
+					fwprintf(stdout, L"::endgroup::\n");
+			}
 			fwprintf(stdout,str);
+			if (id == 3) {//dic load begin
+					in_dic_load = 1;
+					fwprintf(stdout, L"::group::dic load list\n");
+			}
 			break;
 		case E_F:/* fatal */
 			fwprintf(stderr,L"::error title=fatal::%ls",str);
@@ -78,14 +86,6 @@ void loghandler(const wchar_t *str, int mode, int id){
 			break;
 		case E_J:/* other(j) */
 			fwprintf(stdout,str);
-			if(id==3){//dic load begin
-				in_dic_load = 1;
-				fwprintf(stdout, L"::group::dic load list\n");
-			}
-			else if (in_dic_load && id == 8) {//dic load end
-				in_dic_load = 0;
-				fwprintf(stdout, L"::endgroup::\n");
-			}
 			break;
 	};
 }
