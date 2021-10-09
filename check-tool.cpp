@@ -96,7 +96,7 @@ void loghandler(const wchar_t *stra, int mode, int id){
 				fwprintf(stderr,L"::error title=error::%ls",str.data());
 			else{
 				fwprintf(stdout,str.data());
-				fwprintf(stdout,L"// from CI checker: E0057 is always ignored in CI check");
+				fwprintf(stdout,L"// from CI checker: E0057 is always ignored in CI check\n");
 			}
 			break;
 		case E_W:/* warning */
@@ -107,7 +107,7 @@ void loghandler(const wchar_t *stra, int mode, int id){
 				fwprintf(stderr,L"::notice title=notice::%ls",str.data());
 			else{
 				fwprintf(stdout,str.data());
-				fwprintf(stdout,L"// from CI checker: N0000 is always ignored in CI check");
+				fwprintf(stdout,L"// from CI checker: N0000 is always ignored in CI check\n");
 			}
 			break;
 		case E_J:/* other(j) */
