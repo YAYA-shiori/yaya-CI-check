@@ -3,7 +3,6 @@
 #include <cstdio>
 #include <fcntl.h>
 #include <io.h>
-using namespace CODEPAGE_n;
 
 Cshiori shiori;
 
