@@ -68,9 +68,6 @@ void loghandler(const wchar_t *stra, int mode, int id){
 			else if (!in_request_end && L"// response (Execution time : " == str.substr(0, 30)) {
 				in_request_end = 1;
 			}
-			else if (L"// request to library\n// name : " == str){
-				fwprintf(stdout, L"::group::SAORI request call\n");
-			}
 			else if (in_request_end && str == L"\n") {
 				in_request_end = 0;
 				fwprintf(stdout, L"::endgroup::\n");
