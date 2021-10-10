@@ -2,7 +2,34 @@
  > Promise me not to build the nar when the dic file is wrong, okay?  
 
 useage if check only: https://github.com/Taromati2/ghost/blob/master/.github/workflows/auto_check.yml  
+```yml
+#//...
+runs-on: windows-latest
+steps:
+  #//...
+  - name: shiori-check
+    uses: Taromati2/yaya-CI-check@v1
+    with:
+      shiori-path: .\master\shiori\aya.dll
+```
 useage if check defore release: https://github.com/Taromati2/package-factory/blob/master/.github/workflows/auto_release.yml  
+```yml
+jobs:
+  check:
+    #//...
+    runs-on: windows-latest
+    steps:
+      #//...
+      - name: shiori-check
+        uses: Taromati2/yaya-CI-check@v1
+        with:
+          shiori-path: .\Taromati2\ghost\master\shiori\aya.dll
+      #//...
+  build:
+    #//...
+    needs: check
+    #//...
+```
 
 # Attention!  
 This check will perform a load of yaya.dll, so the variable file will be created  
