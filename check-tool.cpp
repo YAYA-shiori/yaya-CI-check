@@ -36,7 +36,7 @@ void loghandler(const wchar_t* stra, int mode, int id) {
 				wstring linenumstr = result[0];//(17) : 
 				linenumstr = linenumstr.substr(1);//17) : 
 				linenumstr = linenumstr.substr(0, linenumstr.size() - 4);//17
-				linenum = (size_t)stoll(linenumstr);
+				linenum = (size_t)wcstoll(linenumstr.c_str(), nullptr, 10);
 			}
 			info = str.substr(result.position() + result.length());//error E0041 : 'for'のループ式が異常です.
 			if (regex_search(info, result, wregex(L" *([WEN])(\\d+|-)( *: |：)"))) {
