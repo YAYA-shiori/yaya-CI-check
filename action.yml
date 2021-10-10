@@ -1,0 +1,16 @@
+name: 'yaya-CI-check'
+description: 'check your ghost in CI'
+branding:
+  icon: 'check-square'  
+  color: 'gray-dark'
+
+inputs:
+  shiori-path:
+    description: 'where is your shiori?'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - id: check
+      run: ${{ github.action_path }}\CI-checker.exe ${{ inputs.shiori-path }}
+
