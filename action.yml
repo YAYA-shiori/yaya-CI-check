@@ -1,5 +1,5 @@
-name: 'yaya-CI-check'
-description: 'check your ghost in CI'
+name: 'shiori-check'
+description: 'check your ghost in CI, only support yaya.'
 branding:
   icon: 'check-square'  
   color: 'gray-dark'
