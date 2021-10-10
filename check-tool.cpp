@@ -4,6 +4,8 @@
 #include <fcntl.h>
 #include <io.h>
 
+#include <regex>
+
 Cshiori shiori;
 
 #define	E_I			0	/* info */
@@ -17,38 +19,56 @@ Cshiori shiori;
 #define	E_UTF8		17	/* マルチバイト文字コード＝UTF-8 */
 #define	E_DEFAULT	32	/* マルチバイト文字コード＝OSデフォルトのコード */
 void loghandler(const wchar_t *stra, int mode, int id){
-	std::wstring_view str=stra;
-	//TODO: Get filename & linenum from str like Taromati2
-	/*
-	//E:\ssp\ghost\Taromati2\ghost\master\dic\system\ERRORLOG.dic(17) : error E0041 : 'for'のループ式が異常です.
-	ErrorList.SPLIT{
-		_L=SPLIT(RE_REPLACEEX(_argv[0],'\((\d+|-)\) : ',',$1,'),',',3)
-		//("E:\ssp\ghost\Taromati2\ghost\master\dic\system\ERRORLOG.dic","17","error E0041 : 'for'のループ式が異常です.")
-		_L[2]=SPLIT(RE_REPLACEEX(_L[2],' *([WEN])(\d+|-)( *: |：)',',$1,$2,'),',',4)
-		//("E:\ssp\ghost\Taromati2\ghost\master\dic\system\ERRORLOG.dic","17","error","E","0041","'for'のループ式が異常です.")
-		_L
-	}
-	ErrorList.Gene{
-		ErrorList.filename=IARRAY
-		ErrorList.linenum=IARRAY
-		ErrorList.type=IARRAY
-		ErrorList.typecode=IARRAY
-		ErrorList.code=IARRAY
-		ErrorList.Info=IARRAY
+	using namespace std;
 
-		_l=GETERRORLOG
-		foreach _l;_i{
-			_t=ErrorList.SPLIT(_i)
-			ErrorList.filename,=_t[0]
-			ErrorList.linenum,=TOINT(_t[1])
-			ErrorList.type,=_t[2]
-			ErrorList.typecode,=_t[3]
-			ErrorList.code,=TOINT(_t[4])
-			ErrorList.Info,=_t[5]
+	wstring str=stra;
+
+	//Get filename & linenum from str like Taromati2
+
+	size_t linenum=0;
+	wstring info,type,filename;
+	{
+		wsmatch result;
+		//E:\ssp\ghost\Taromati2\ghost\master\dic\system\ERRORLOG.dic(17) : error E0041 : 'for'のループ式が異常です.
+		if (regex_search(str, result,wregex(L"\\((\\d+|-)\\) : "))) {
+			filename=str.substr(0,result.position());//E:\ssp\ghost\Taromati2\ghost\master\dic\system\ERRORLOG.dic
+			{
+				wstring linenumstr = result[0];//(17) : 
+				linenumstr = linenumstr.substr(1);//17) : 
+				linenumstr = linenumstr.substr(0, linenumstr.size() - 4);//17
+				linenum = (size_t)stoll(linenumstr); 
+			}
+			info = str.substr(result.position()+result.length());//error E0041 : 'for'のループ式が異常です.
+			if (regex_search(info, result, wregex(L" *([WEN])(\\d+|-)( *: |：)"))) {
+				type = info.substr(0, result.position());//error
+				info = info.substr(result.position()+result.length());//'for'のループ式が異常です.
+			}
+		}
+		switch (mode) {
+		case E_F:/* fatal */
+			if(type.empty())
+				type=L"fatal";
+			goto common;
+		case E_E:/* error */
+			if(type.empty())
+				type=L"error";
+			goto common;
+		case E_W:/* warning */
+			if(type.empty())
+				type=L"warning";
+			goto common;
+		case E_N:/* note */
+			if(type.empty())
+				type=L"notice";
+			goto common;
+		common:
+			if (info.empty())
+				info = str;
+			if (regex_search(info, result, wregex(L"^// *"))) {
+				info = info.substr(result.length());
+			}
 		}
 	}
-	*/
-	//then out put info in CI from
 	/*
 	::error file={name},line={line},endLine={endLine},title={title}::{message}
 	::warning file={name},line={line},endLine={endLine},title={title}::{message}
@@ -63,52 +83,58 @@ void loghandler(const wchar_t *stra, int mode, int id){
 			break;
 		case E_I:/* info */
 			if(L"// request\n"==str){
-				fwprintf(stdout, L"::group::request call\n");
+				fputws(L"::group::request call\n", stdout);
 			}
 			else if (!in_request_end && L"// response (Execution time : " == str.substr(0, 30)) {
 				in_request_end = 1;
 			}
 			else if (in_request_end && str == L"\n") {
 				in_request_end = 0;
-				fwprintf(stdout, L"::endgroup::\n");
-			}
-			if (id != 0) {
-				fwprintf(stdout, L"");
+				fputws(L"::endgroup::\n", stdout);
 			}
 			if (in_dic_load && id == 8) {//dic load end
 				in_dic_load = 0;
-				fwprintf(stdout, L"::endgroup::\n");
+				fputws(L"::endgroup::\n", stdout);
 			}
-			fwprintf(stdout,str.data());
+			fputws(str.data(), stdout);
 			if (id == 3) {//dic load begin
 				in_dic_load = 1;
-				fwprintf(stdout, L"::group::dic load list\n");
+				fputws(L"::group::dic load list\n", stdout);
 			}
 			break;
 		case E_F:/* fatal */
-			fwprintf(stderr,L"::error title=fatal::%ls",str.data());
+			fputws(str.data(), stderr);
+			fputws((L"::error file="+filename+L",line="+to_wstring(linenum)+L",title="+type+L"::"+info+L"\n").data(), stderr);
 			break;
 		case E_E:/* error */
-			if(id!=57)
-				fwprintf(stderr,L"::error title=error::%ls",str.data());
+			if(id!=57){
+				fputws(str.data(), stderr);
+				if(id!=10)
+					fputws((L"::error file="+filename+L",line="+to_wstring(linenum)+L",title="+type+L"::"+info+L"\n").data(), stderr);
+				else
+					fputws(L"::error title=Emergency mode::Goes into emergency mode\n", stderr);
+			}
 			else{
-				fwprintf(stdout,str.data());
-				fwprintf(stdout,L"// from CI checker: E0057 is always ignored in CI check\n");
+				fputws(str.data(), stdout);
+				fputws(L"// from CI checker: E0057 is always ignored in CI check\n", stdout);
 			}
 			break;
 		case E_W:/* warning */
-			fwprintf(stderr,L"::warning title=warning::%ls",str.data());
+			fputws(str.data(), stderr);
+			fputws((L"::warning file=" + filename + L",line=" + to_wstring(linenum) + L",title=" + type + L"::" + info + L"\n").data(), stderr);
 			break;
 		case E_N:/* note */
-			if(id!=0)
-				fwprintf(stderr,L"::notice title=notice::%ls",str.data());
+			if(id!=0){
+				fputws(str.data(), stderr);
+				fputws((L"::notice file=" + filename + L",line=" + to_wstring(linenum) + L",title=" + type + L"::" + info + L"\n").data(), stderr);
+			}
 			else{
-				fwprintf(stdout,str.data());
-				fwprintf(stdout,L"// from CI checker: N0000 is always ignored in CI check\n");
+				fputws(str.data(), stdout);
+				fputws(L"// from CI checker: N0000 is always ignored in CI check\n", stdout);
 			}
 			break;
 		case E_J:/* other(j) */
-			fwprintf(stdout,str.data());
+			fputws(str.data(), stdout);
 			break;
 	};
 }
@@ -123,14 +149,14 @@ int wmain(int argc,wchar_t**argv){
 	shiori.Set_loghandler(loghandler);
 	shiori.SetTo(argv[1]);
 	if(!shiori.All_OK())
-		fwprintf(stderr,L"::error title=shiori.ALL_OK() returns false::shiori load failed\n");
+		fputws(L"::error title=shiori.ALL_OK() returns false::shiori load failed\n", stdout);
 	if(!shiori.can_make_CI_check()){
-		fwprintf(stderr,L"::error title=checker is NULL::Unsupported shiori\n");
+		fputws(L"::error title=checker is NULL::Unsupported shiori\n", stdout);
 		return EXIT_FAILURE;
 	}
 	auto failed=shiori.CI_check_failed();
 	if (failed){
-		fwprintf(stderr,L"::error title=open your tama!::some error in your dic\n");
+		fputws(L"::error title=open your tama!::some error in your dic\n", stdout);
 	}
 	return failed?EXIT_FAILURE:EXIT_SUCCESS;
 };
