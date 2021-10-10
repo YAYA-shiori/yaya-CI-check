@@ -104,13 +104,13 @@ void loghandler(const wchar_t* stra, int mode, int id) {
 		break;
 	case E_F:/* fatal */
 		fputws(str.data(), stderr);
-		fputws((L"::error file=" + filename + L",line=" + to_wstring(linenum) + L",endLine=" + to_wstring(linenum) + L",title=" + type + L"::" + info + L"\n").data(), stderr);
+		fputws((L"::error file=" + filename + L",line=" + to_wstring(linenum) + L",title=" + type + L"::" + info + L"\n").data(), stderr);
 		break;
 	case E_E:/* error */
 		if (id != 57) {
 			fputws(str.data(), stderr);
 			if (id != 10)
-				fputws((L"::error file=" + filename + L",line=" + to_wstring(linenum) + L",endLine=" + to_wstring(linenum) + L",title=" + type + L"::" + info + L"\n").data(), stderr);
+				fputws((L"::error file=" + filename + L",line=" + to_wstring(linenum) + L",title=" + type + L"::" + info + L"\n").data(), stderr);
 			else
 				fputws(L"::error title=Emergency mode::Goes into emergency mode\n", stderr);
 		}
@@ -121,12 +121,12 @@ void loghandler(const wchar_t* stra, int mode, int id) {
 		break;
 	case E_W:/* warning */
 		fputws(str.data(), stderr);
-		fputws((L"::warning file=" + filename + L",line=" + to_wstring(linenum) + L",endLine=" + to_wstring(linenum) + L",title=" + type + L"::" + info + L"\n").data(), stderr);
+		fputws((L"::warning file=" + filename + L",line=" + to_wstring(linenum) + L",title=" + type + L"::" + info + L"\n").data(), stderr);
 		break;
 	case E_N:/* note */
 		if (id != 0) {
 			fputws(str.data(), stderr);
-			fputws((L"::notice file=" + filename + L",line=" + to_wstring(linenum) + L",endLine=" + to_wstring(linenum) + L",title=" + type + L"::" + info + L"\n").data(), stderr);
+			fputws((L"::notice file=" + filename + L",line=" + to_wstring(linenum) + L",title=" + type + L"::" + info + L"\n").data(), stderr);
 		}
 		else {
 			fputws(str.data(), stdout);
