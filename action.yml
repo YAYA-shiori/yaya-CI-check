@@ -13,4 +13,4 @@ runs:
   steps:
     - id: check
       run: ${{ github.action_path }}\CI-checker.exe ${{ inputs.shiori-path }}
-
+      shell: cmd
