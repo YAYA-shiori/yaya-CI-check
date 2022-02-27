@@ -1,6 +1,7 @@
 # yaya-CI-check  
  > Promise me not to build the nar when the dic file is wrong, okay?  
 
+exe's source code in [exe branch](https://github.com/Taromati2/yaya-CI-check/tree/exe)  
 about `github action`: https://docs.github.com/actions  
 
 useage if check only: https://github.com/Taromati2/ghost/blob/master/.github/workflows/auto_check.yml  
